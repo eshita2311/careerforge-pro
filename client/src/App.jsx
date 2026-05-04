@@ -23,50 +23,95 @@ function App() {
     }
   }, []);
 
-  // 🔥 STRIPE SUBSCRIBE
+  // 🔥 Stripe (optional)
   const handleSubscribe = async () => {
     try {
       const res = await axios.post("http://localhost:5000/api/checkout");
       window.location.href = res.data.url;
     } catch (err) {
       console.error(err);
-      alert("Payment failed");
+      alert("Stripe checkout unavailable. Use Demo Mode.");
     }
   };
 
-  // 🔥 DEMO MODE (backup for testing)
+  // 🔥 Demo mode (MAIN FLOW)
   const handleDemoUpgrade = () => {
     localStorage.setItem("isPro", "true");
     setIsPro(true);
-    alert("🎉 You are now Pro (Demo Mode)");
+    alert("🎉 Pro unlocked (Demo Mode)");
+  };
+
+  // 🔥 Reset (for testing)
+  const handleReset = () => {
+    localStorage.removeItem("isPro");
+    setIsPro(false);
+    alert("Reset to Free Mode");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white">
 
-      {/* Header */}
-      <h1 className="text-3xl font-bold text-center mb-8">
-        🚀 CareerForge Pro
-      </h1>
+      {/* 🔥 NAVBAR */}
+      <div className="flex justify-between items-center px-6 py-4 border-b border-gray-700">
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold">🚀 CareerForge Pro</h1>
 
-        {/* FORM */}
-        <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Resume Builder</h2>
+        <div className="flex gap-3 items-center">
+
+          {/* PRO BADGE */}
+          {isPro && (
+            <span className="bg-green-600 px-4 py-1 rounded-full text-sm">
+              ✅ Pro
+            </span>
+          )}
+
+          {/* DEMO PRIMARY BUTTON */}
+          {!isPro && (
+            <button
+              onClick={handleDemoUpgrade}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-2 rounded-lg hover:scale-105 transition"
+            >
+              🚀 Unlock Pro
+            </button>
+          )}
+
+          {/* OPTIONAL STRIPE BUTTON */}
+          <button
+            onClick={handleSubscribe}
+            className="text-xs text-gray-400 underline"
+          >
+            Try Stripe
+          </button>
+
+          {/* RESET BUTTON */}
+          <button
+            onClick={handleReset}
+            className="text-xs text-gray-400 underline"
+          >
+            Reset
+          </button>
+
+        </div>
+      </div>
+
+      {/* 🔥 MAIN CONTENT */}
+      <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
+
+        {/* Resume Builder */}
+        <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/10 hover:shadow-xl hover:scale-[1.02] transition duration-300">
+          <h2 className="text-xl font-semibold mb-4">📄 Resume Builder</h2>
           <ResumeForm data={data} setData={setData} />
         </div>
 
-        {/* PREVIEW */}
-        <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">Live Preview</h2>
+        {/* Preview */}
+        <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/10 hover:shadow-xl hover:scale-[1.02] transition duration-300">
+          <h2 className="text-xl font-semibold mb-4">👀 Live Preview</h2>
           <ResumePreview data={data} isPro={isPro} />
         </div>
 
-        {/* ATS */}
-        <div className="bg-white/10 backdrop-blur-md p-5 rounded-2xl shadow-lg">
-          <h2 className="text-xl font-semibold mb-4">ATS Analyzer</h2>
+        {/* ATS + AI */}
+        <div className="bg-white/10 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/10 hover:shadow-xl hover:scale-[1.02] transition duration-300">
+          <h2 className="text-xl font-semibold mb-4">🤖 ATS + AI Tools</h2>
           <ATSPanel
             data={data}
             jobDesc={jobDesc}
@@ -77,37 +122,26 @@ function App() {
 
       </div>
 
-      {/* 🔥 UPGRADE SECTION */}
+      {/* 🔥 BOTTOM SECTION */}
       {!isPro && (
-        <div className="text-center mt-10 space-y-3">
+        <div className="text-center py-10 space-y-4">
 
-          {/* REAL PAYMENT */}
+          {/* MAIN DEMO BUTTON */}
           <button
-            onClick={handleSubscribe}
-            className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 rounded-lg font-semibold w-64"
+            onClick={handleDemoUpgrade}
+            className="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-3 rounded-lg font-semibold hover:scale-105 transition"
           >
-            💳 Upgrade to Pro ($5/month)
+            🚀 Unlock Pro (Demo)
           </button>
 
-          {/* DEMO BUTTON (optional but useful) */}
-          <div>
-            <button
-              onClick={handleDemoUpgrade}
-              className="text-sm text-gray-400 underline"
-            >
-              Use Demo Mode (Skip Payment)
-            </button>
-          </div>
+          {/* OPTIONAL STRIPE */}
+          <button
+            onClick={handleSubscribe}
+            className="text-sm text-gray-400 underline"
+          >
+            Try Real Payment (Stripe)
+          </button>
 
-        </div>
-      )}
-
-      {/* PRO BADGE */}
-      {isPro && (
-        <div className="text-center mt-8">
-          <span className="bg-green-600 px-4 py-2 rounded-full text-sm">
-            ✅ Pro User
-          </span>
         </div>
       )}
 

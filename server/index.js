@@ -27,9 +27,11 @@ function cleanText(text) {
 }
 
 // Stopwords
-const stopWords = [
-  "and","or","the","is","a","to","of","in","for","on","with","as","by","an","at"
+const techSkills = [
+  "java","python","react","node","css","html","sql","javascript"
 ];
+
+const filteredKeywords = keywords.filter(k => techSkills.includes(k));
 
 // Extract keywords
 function extractKeywords(text) {
@@ -62,7 +64,7 @@ function calculateATS(skills, keywords) {
 
 /* ---------- ROUTES ---------- */
 
-// 🔹 ATS
+// 🔹 ATS ANALYZER
 app.post("/api/analyze", (req, res) => {
   try {
     const { jobDesc, skills } = req.body;
@@ -88,7 +90,7 @@ app.post("/api/analyze", (req, res) => {
   }
 });
 
-// 🔹 AI Rewrite
+// 🔹 AI RESUME REWRITE
 app.post("/api/rewrite", async (req, res) => {
   try {
     const { bullets, jobDesc } = req.body;
@@ -106,15 +108,45 @@ app.post("/api/rewrite", async (req, res) => {
   }
 });
 
+// 🔹 COVER LETTER GENERATOR (🔥 Week 4)
+app.post("/api/cover-letter", async (req, res) => {
+  try {
+    const { name, skills, jobDesc } = req.body;
+
+    if (!name || !skills || !jobDesc) {
+      return res.status(400).json({ error: "Missing input" });
+    }
+
+    const prompt = `
+Write a professional cover letter for:
+
+Name: ${name}
+Skills: ${skills}
+Job Description: ${jobDesc}
+
+Make it professional, concise, and impactful.
+`;
+
+    const response = await rewriteBullets([prompt], jobDesc);
+
+    res.json({ letter: response });
+
+  } catch (err) {
+    console.error("COVER LETTER ERROR:", err);
+    res.status(500).json({ error: "Cover letter failed" });
+  }
+});
+
 // 🔹 PDF EXPORT
 app.post("/api/pdf", async (req, res) => {
   try {
     const { html } = req.body;
 
-    if (!html) return res.status(400).send("No HTML");
+    if (!html) return res.status(400).send("No HTML provided");
 
     const browser = await puppeteer.launch({
       headless: "new",
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();
@@ -153,7 +185,7 @@ app.post("/api/checkout", async (req, res) => {
             product_data: {
               name: "CareerForge Pro",
             },
-            unit_amount: 500, // $5
+            unit_amount: 500,
             recurring: { interval: "month" },
           },
           quantity: 1,
@@ -171,8 +203,15 @@ app.post("/api/checkout", async (req, res) => {
   }
 });
 
+/* ---------- HEALTH CHECK ---------- */
+
+app.get("/", (req, res) => {
+  res.send("🚀 CareerForge API is running");
+});
+
 /* ---------- RUN ---------- */
 
-app.listen(5000, () => {
-  console.log("🚀 Server running on http://localhost:5000");
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

@@ -45,6 +45,11 @@ function ATSPanel({ data, jobDesc, setJobDesc, isPro }) {
 
   // 🔹 AI REWRITE
   const handleAIRewrite = async () => {
+    if (!isPro) {
+      alert("Upgrade to Pro for AI features");
+      return;
+    }
+
     if (!data.summary) {
       alert("Add some summary/bullets first");
       return;
@@ -70,44 +75,46 @@ function ATSPanel({ data, jobDesc, setJobDesc, isPro }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
 
-      {/* Job Description */}
+      {/* 🔥 Job Description */}
       <textarea
-        className="w-full p-3 rounded-lg bg-gray-700 text-white border border-gray-600 placeholder-gray-300"
+        className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
         placeholder="Paste Job Description..."
         value={jobDesc}
         onChange={(e) => setJobDesc(e.target.value)}
       />
 
-      {/* Analyze Button */}
-      <button
-        onClick={analyze}
-        className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-lg w-full"
-      >
-        {loading ? "Analyzing..." : "Analyze Resume"}
-      </button>
+      {/* 🔥 Buttons */}
+      <div className="flex flex-col gap-3">
 
-      {/* 🔒 AI BUTTON */}
-      {isPro ? (
+        <button
+          onClick={analyze}
+          className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-lg w-full hover:scale-105 transition"
+        >
+          {loading ? "Analyzing..." : "Analyze Resume"}
+        </button>
+
         <button
           onClick={handleAIRewrite}
-          className="bg-purple-500 text-white px-4 py-2 rounded-lg w-full"
+          className={`px-4 py-2 rounded-lg w-full transition font-semibold ${
+            isPro
+              ? "bg-purple-500 text-white hover:scale-105"
+              : "bg-gray-600 text-white cursor-not-allowed"
+          }`}
         >
-          {aiLoading ? "Improving..." : "✨ Improve with AI"}
+          {aiLoading
+            ? "Improving..."
+            : isPro
+            ? "✨ Improve with AI"
+            : "🔒 AI Rewrite (Pro)"}
         </button>
-      ) : (
-        <button
-          onClick={() => alert("Upgrade to Pro for AI features")}
-          className="bg-gray-600 text-white px-4 py-2 rounded-lg w-full"
-        >
-          🔒 AI Rewrite (Pro)
-        </button>
-      )}
 
-      {/* Score */}
+      </div>
+
+      {/* 🔥 SCORE CARD */}
       {score !== null && (
-        <div>
+        <div className="bg-gray-800 p-4 rounded-xl shadow-md">
           <p className="font-semibold text-lg">
             ATS Score: <span className="text-green-400">{score}%</span>
           </p>
@@ -121,13 +128,16 @@ function ATSPanel({ data, jobDesc, setJobDesc, isPro }) {
         </div>
       )}
 
-      {/* Matched */}
+      {/* 🔥 MATCHED */}
       {matched.length > 0 && (
-        <div>
-          <h4 className="text-green-400 font-semibold mt-3">✔ Matched</h4>
+        <div className="bg-gray-800 p-4 rounded-xl">
+          <h4 className="text-green-400 font-semibold">✔ Matched Skills</h4>
           <div className="flex flex-wrap gap-2 mt-2">
             {matched.map((k, i) => (
-              <span key={i} className="bg-green-600/20 px-2 py-1 rounded">
+              <span
+                key={i}
+                className="bg-green-600/20 text-green-300 px-2 py-1 rounded text-sm"
+              >
                 {k}
               </span>
             ))}
@@ -135,13 +145,16 @@ function ATSPanel({ data, jobDesc, setJobDesc, isPro }) {
         </div>
       )}
 
-      {/* Missing */}
+      {/* 🔥 MISSING */}
       {missing.length > 0 && (
-        <div>
-          <h4 className="text-red-400 font-semibold mt-3">✘ Missing</h4>
+        <div className="bg-gray-800 p-4 rounded-xl">
+          <h4 className="text-red-400 font-semibold">✘ Missing Skills</h4>
           <div className="flex flex-wrap gap-2 mt-2">
             {missing.map((k, i) => (
-              <span key={i} className="bg-red-600/20 px-2 py-1 rounded">
+              <span
+                key={i}
+                className="bg-red-600/20 text-red-300 px-2 py-1 rounded text-sm"
+              >
                 {k}
               </span>
             ))}
@@ -149,13 +162,16 @@ function ATSPanel({ data, jobDesc, setJobDesc, isPro }) {
         </div>
       )}
 
-      {/* Keywords */}
+      {/* 🔥 KEYWORDS */}
       {keywords.length > 0 && (
-        <div>
-          <h4 className="text-blue-400 font-semibold mt-3">🔍 Keywords</h4>
+        <div className="bg-gray-800 p-4 rounded-xl">
+          <h4 className="text-blue-400 font-semibold">🔍 Extracted Keywords</h4>
           <div className="flex flex-wrap gap-2 mt-2">
             {keywords.map((k, i) => (
-              <span key={i} className="bg-blue-600/20 px-2 py-1 rounded">
+              <span
+                key={i}
+                className="bg-blue-600/20 text-blue-300 px-2 py-1 rounded text-sm"
+              >
                 {k}
               </span>
             ))}
@@ -163,16 +179,19 @@ function ATSPanel({ data, jobDesc, setJobDesc, isPro }) {
         </div>
       )}
 
-      {/* AI RESULT */}
+      {/* 🔥 AI RESULT */}
       {aiResult.length > 0 && (
-        <div>
-          <h4 className="text-purple-400 font-semibold mt-3">
-            ✨ Improved Resume
+        <div className="bg-gray-800 p-4 rounded-xl">
+          <h4 className="text-purple-400 font-semibold">
+            ✨ Improved Resume Points
           </h4>
-          <ul className="mt-2 space-y-1">
+          <ul className="mt-3 space-y-2">
             {aiResult.map((line, i) => (
-              <li key={i} className="text-gray-300">
-                {line}
+              <li
+                key={i}
+                className="bg-gray-700 p-2 rounded text-gray-200 text-sm"
+              >
+                • {line}
               </li>
             ))}
           </ul>
