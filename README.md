@@ -89,12 +89,6 @@ STRIPE_SECRET_KEY=your_key_here
 
 ---
 
-## 📸 Demo
-
-(Add screenshot here)
-
----
-
 ## 📌 Future Improvements
 - Multiple resume templates
 - Advanced ATS scoring (AI-based)
